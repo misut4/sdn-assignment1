@@ -15,18 +15,25 @@ async function getAllRoute(req, res) {
 }
 
 async function postRoute(req, res) {
-  const newplayer = {
+  const newPlayer = {
     playerId: req.body.playerId,
     playerName: req.body.playerName,
   };
 
+  let found = false;
+
   dataSetPlayer.forEach((player) => {
-    if (player.playerId === newplayer.playerId) {
-      res.send("id already exists");
+    if (player.playerId === newPlayer.playerId) {
+      found = true;
     }
   });
-  dataSetPlayer.push(newplayer);
-  res.send(dataSetPlayer);
+
+  if (found) {
+    res.send(`${newPlayer.playerId} already exists`);
+  } else {
+    dataSetPlayer.push(newPlayer);
+    res.send(dataSetPlayer);
+  }
 }
 
 async function putRoute(req, res) {
