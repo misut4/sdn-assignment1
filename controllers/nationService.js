@@ -10,7 +10,7 @@ async function getRoute(req, res) {
 }
 
 async function getAllRoute(req, res) {
-  excludeNullInResponse()
+  excludeNullInResponse();
   res.send(dataSetNation);
 }
 
@@ -20,13 +20,20 @@ async function postRoute(req, res) {
     nationName: req.body.nationName,
   };
 
+  let found = false;
+
   dataSetNation.forEach((nation) => {
     if (nation.nationId === newNation.nationId) {
-      res.send("id already exists");
+      found = true;
     }
   });
-  dataSetNation.push(newNation);
-  res.send(dataSetNation);
+
+  if (found) {
+    res.send(`${newNation.nationId} already exists`);
+  } else {
+    dataSetNation.push(newNation);
+    res.send(dataSetNation);
+  }
 }
 
 async function putRoute(req, res) {
@@ -56,9 +63,11 @@ async function delRoute(req, res) {
   res.send(`${nationId} deleted successfully`);
 }
 
-async function excludeNullInResponse(){
-  const newDataSet = dataSetNation?.filter((object) => object.nationId !== null)
-  dataSetNation = newDataSet
+async function excludeNullInResponse() {
+  const newDataSet = dataSetNation?.filter(
+    (object) => object.nationId !== null
+  );
+  dataSetNation = newDataSet;
 }
 
 module.exports = { getRoute, getAllRoute, postRoute, putRoute, delRoute };
