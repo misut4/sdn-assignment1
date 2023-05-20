@@ -1,71 +1,103 @@
-let dataSetPlayer = require("../dataSetPlayer");
+const playerRepository = require("../models/playerModels");
 
 async function getRoute(req, res) {
-  const playerId = req.body.playerId;
-  dataSetPlayer.forEach((player) => {
-    if (player.playerId === playerId) {
-      res.send(player);
-    }
-  });
+  const playerName = req.body.name;
+
+  const found = await playerRepository.findOne({ name: playerName });
+  res.json(found);
 }
 
 async function getAllRoute(req, res) {
-  excludeNullInResponse()
-  res.send(dataSetPlayer);
+  const foundList = await playerRepository.find();
+  excludeNullInResponse(foundList);
+  res.json(foundList);
 }
 
 async function postRoute(req, res) {
-  const newPlayer = {
-    playerId: req.body.playerId,
-    playerName: req.body.playerName,
+  const foundList = await playerRepository.find();
+  excludeNullInResponse(foundList);
+  res.json(foundList);
+}
+
+async function postRoute(req, res) {
+  const newplayer = {
+    name: req.body.name,
+    imageURL: req.body.imageURL,
+    club: req.body.club,
+    position: req.body.position,
+    goal: req.body.goal,
+    isCaptain: req.body.isCaptain,
   };
 
-  let found = false;
-
-  dataSetPlayer.forEach((player) => {
-    if (player.playerId === newPlayer.playerId) {
-      found = true;
-    }
-  });
-
-  if (found) {
-    res.send(`${newPlayer.playerId} already exists`);
-  } else {
-    dataSetPlayer.push(newPlayer);
-    res.send(dataSetPlayer);
+  try {
+    await playerRepository.create(newplayer).then(() => {
+      console.log(`Created ${newplayer}`);
+      res.json(newplayer);
+    });
+  } catch (error) {
+    console.log(error);
   }
 }
 
 async function putRoute(req, res) {
-  const updatePlayer = {
-    playerId: req.body.playerId,
-    playerName: req.body.playerName,
+  const updateplayer = {
+    name: req.body.name,
+    imageURL: req.body.imageURL,
+    club: req.body.club,
+    position: req.body.position,
+    goal: req.body.goal,
+    isCaptain: req.body.isCaptain,
   };
 
-  dataSetPlayer.forEach((player) => {
-    if (player.playerId === updatePlayer.playerId) {
-      player.playerId = updatePlayer.playerId;
-      player.playerName = updatePlayer.playerName;
-    }
-  });
+  const found = await playerRepository.findOne({ name: req.body.name });
 
-  res.send(dataSetPlayer);
+  try {
+    await playerRepository
+      .updateOne(
+        { name: found.name },
+        {
+          name: updateplayer.name,
+          imageURL: updateplayer.imageURL,
+          club: updateplayer.club,
+          position: updateplayer.position,
+          goal: updateplayer.goal,
+          isCaptain: updateplayer.isCaptain,
+        }
+      )
+      .then(() => {
+        console.log(`Updated ${updateplayer}`);
+        res.json(`Updated ${updateplayer}`);
+      });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function delRoute(req, res) {
-  const playerId = req.body.playerId;
-  dataSetPlayer.forEach((player) => {
-    if (player.playerId === playerId) {
-      player.playerId = null;
-      player.playerName = null;
-    }
-  });
-  res.send(`${playerId} deleted successfully`);
+  const name = req.body.name;
+
+  try {
+    await playerRepository.findOneAndDelete({ name: name }).then(() => {
+      console.log(`Deleted ${name}`);
+      res.json(`Deleted ${name}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  return foundList;
 }
 
-async function excludeNullInResponse(){
-  const newDataSetPlayer = dataSetPlayer?.filter((object) => object.playerId !== null)
-  dataSetPlayer = newDataSetPlayer
+async function excludeNullInResponse(foundList) {
+  foundList.forEach((object) => {
+    for (const [key, value] of Object.entries(object)) {
+      if (value === null) {
+        delete object[key];
+      }
+    }
+  });
+
+  return foundList;
 }
 
 module.exports = { getRoute, getAllRoute, postRoute, putRoute, delRoute };

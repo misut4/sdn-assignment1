@@ -1,73 +1,80 @@
-let dataSetNation = require("../dataSetNation");
+const nationRepository = require("../models/nationModels");
 
 async function getRoute(req, res) {
-  const nationId = req.body.nationId;
-  dataSetNation.forEach((nation) => {
-    if (nation.nationId === nationId) {
-      res.send(nation);
-    }
-  });
+  const nationName = req.body.name;
+
+  const found = await nationRepository.findOne({ name: nationName });
+  res.json(found);
 }
 
 async function getAllRoute(req, res) {
-  excludeNullInResponse();
-  res.send(dataSetNation);
+  const foundList = await nationRepository.find();
+  excludeNullInResponse(foundList);
+  res.json(foundList);
 }
 
 async function postRoute(req, res) {
   const newNation = {
-    nationId: req.body.nationId,
-    nationName: req.body.nationName,
+    name: req.body.name,
+    description: req.body.description,
   };
 
-  let found = false;
-
-  dataSetNation.forEach((nation) => {
-    if (nation.nationId === newNation.nationId) {
-      found = true;
-    }
-  });
-
-  if (found) {
-    res.send(`${newNation.nationId} already exists`);
-  } else {
-    dataSetNation.push(newNation);
-    res.send(dataSetNation);
+  try {
+    await nationRepository.create(newNation).then(() => {
+      console.log(`Created ${newNation}`);
+      res.json(newNation);
+    });
+  } catch (error) {
+    console.log(error);
   }
 }
 
 async function putRoute(req, res) {
   const updateNation = {
-    nationId: req.body.nationId,
-    nationName: req.body.nationName,
+    name: req.body.name,
+    description: req.body.nescription,
   };
 
-  dataSetNation.forEach((nation) => {
-    if (nation.nationId === updateNation.nationId) {
-      nation.nationId = updateNation.nationId;
-      nation.nationName = updateNation.nationName;
-    }
-  });
+  const found = await nationRepository.findOne({ name: req.body.name });
 
-  res.send(dataSetNation);
+  try {
+    await nationRepository
+      .updateOne(
+        { name: found.name },
+        { name: updateNation.name, description: updateNation.description }
+      )
+      .then(() => {
+        console.log(`Updated ${updateNation}`);
+        res.json(`Updated ${updateNation}`);
+      });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function delRoute(req, res) {
-  const nationId = req.body.nationId;
-  dataSetNation.forEach((nation) => {
-    if (nation.nationId === nationId) {
-      nation.nationId = null;
-      nation.nationName = null;
-    }
-  });
-  res.send(`${nationId} deleted successfully`);
+  const name = req.body.name;
+
+  try {
+    await nationRepository.findOneAndDelete({ name: name }).then(() => {
+      console.log(`Deleted ${name}`);
+      res.json(`Deleted ${name}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-async function excludeNullInResponse() {
-  const newDataSet = dataSetNation?.filter(
-    (object) => object.nationId !== null
-  );
-  dataSetNation = newDataSet;
+async function excludeNullInResponse(foundList) {
+  foundList.forEach((object) => {
+    for (const [key, value] of Object.entries(object)) {
+      if (value === null) {
+        delete object[key];
+      }
+    }
+  });
+
+  return foundList;
 }
 
 module.exports = { getRoute, getAllRoute, postRoute, putRoute, delRoute };
