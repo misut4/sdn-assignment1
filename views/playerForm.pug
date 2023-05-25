@@ -1,0 +1,39 @@
+doctype html
+html
+    body
+        h1 Form
+        - let url = 'player'
+        - let method = ''
+        button(onclick='onMethodChange("create")') Create
+        button(onclick='onMethodChange("update")') Update
+        form(action=url method=method)
+            p
+                | name:
+                input(name='name' value='' type='text')
+                br
+                | imageURL:
+                input(name='imageURL' value='' type='text')
+                br
+                | club:
+                input(name='club' value='' type='text')
+                br
+                | position:
+                input(name='position' value='' type='text')
+                br
+                | goal:
+                input(name='goal' value='' type='number')
+                br
+                | isCaptain: 
+                input(type="checkbox" name="isCaptain" value="true")
+            input(value='Submit' type='submit')
+
+    script.
+        function onMethodChange(method) {
+            const form = document.querySelector('form');
+            method = (method === 'create') ? 'POST' : 'PUT';
+            form.method = method;
+            form.action = url;
+        }
+
+
+

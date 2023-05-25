@@ -1,22 +1,20 @@
 const playerRepository = require("../models/playerModels");
 
 async function getRoute(req, res) {
-  const playerName = req.body.name;
+  const playerId = req.params._id;
 
-  const found = await playerRepository.findOne({ name: playerName });
+  const found = await playerRepository.findOne({ _id: playerId }).catch(() => {
+    console.log("sth went wrong");
+  });
   res.json(found);
 }
 
 async function getAllRoute(req, res) {
   const foundList = await playerRepository.find();
   excludeNullInResponse(foundList);
-  res.json(foundList);
-}
-
-async function postRoute(req, res) {
-  const foundList = await playerRepository.find();
-  excludeNullInResponse(foundList);
-  res.json(foundList);
+  // res.json(foundList);
+  const headers = await setTableHeader();
+  res.render("playerView.pug", { list: foundList, headers: headers });
 }
 
 async function postRoute(req, res) {
@@ -32,7 +30,8 @@ async function postRoute(req, res) {
   try {
     await playerRepository.create(newplayer).then(() => {
       console.log(`Created ${newplayer}`);
-      res.json(newplayer);
+      // res.json(newplayer);
+      getAllRoute(req, res);
     });
   } catch (error) {
     console.log(error);
@@ -40,6 +39,7 @@ async function postRoute(req, res) {
 }
 
 async function putRoute(req, res) {
+  const playerId = req.params._id;
   const updateplayer = {
     name: req.body.name,
     imageURL: req.body.imageURL,
@@ -49,43 +49,37 @@ async function putRoute(req, res) {
     isCaptain: req.body.isCaptain,
   };
 
-  const found = await playerRepository.findOne({ name: req.body.name });
+  const found = await playerRepository.findOne({ _id: playerId });
 
   try {
-    await playerRepository
-      .updateOne(
-        { name: found.name },
-        {
-          name: updateplayer.name,
-          imageURL: updateplayer.imageURL,
-          club: updateplayer.club,
-          position: updateplayer.position,
-          goal: updateplayer.goal,
-          isCaptain: updateplayer.isCaptain,
-        }
-      )
-      .then(() => {
-        console.log(`Updated ${updateplayer}`);
-        res.json(`Updated ${updateplayer}`);
-      });
+    await playerRepository.updateOne(
+      { _id: playerId },
+      {
+        name: updateplayer.name,
+        imageURL: updateplayer.imageURL,
+        club: updateplayer.club,
+        position: updateplayer.position,
+        goal: updateplayer.goal,
+        isCaptain: updateplayer.isCaptain,
+      }
+    );
+    // res.json(`Updated ${updateplayer}`);
+    getAllRoute(req, res);
   } catch (error) {
     console.log(error);
   }
 }
 
 async function delRoute(req, res) {
-  const name = req.body.name;
-
+  const playerId = req.params._id;
   try {
-    await playerRepository.findOneAndDelete({ name: name }).then(() => {
-      console.log(`Deleted ${name}`);
-      res.json(`Deleted ${name}`);
+    await playerRepository.findOneAndDelete({ _id: playerId }).then(() => {
+      // res.json(`Deleted ${name}`);
+      getAllRoute(req, res);
     });
   } catch (error) {
     console.log(error);
   }
-
-  return foundList;
 }
 
 async function excludeNullInResponse(foundList) {
@@ -98,6 +92,20 @@ async function excludeNullInResponse(foundList) {
   });
 
   return foundList;
+}
+
+async function setTableHeader() {
+  const headers = [
+    "[_id]",
+    "[name]",
+    "[imageURL]",
+    "[club]",
+    "[position]",
+    "[goal]",
+    "[isCaptain]",
+  ];
+
+  return headers;
 }
 
 module.exports = { getRoute, getAllRoute, postRoute, putRoute, delRoute };

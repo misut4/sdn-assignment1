@@ -1,0 +1,27 @@
+doctype html
+html
+    body
+        h1 Form
+        - let url = 'nation'
+        - let method = ''
+        button(onclick='onMethodChange("create")') Create
+        button(onclick='onMethodChange("update")') Update
+        form(action=url method=method)
+            p
+                | name:
+                input(name='name' value='' type='text')
+                br
+                | description:
+                input(name='description' value='' type='text')
+            input(value='Submit' type='submit')
+
+    script.
+        function onMethodChange(method) {
+            const form = document.querySelector('form');
+            method = (method === 'create') ? 'POST' : 'PUT';
+            form.method = method;
+            form.action = url;
+        }
+
+
+

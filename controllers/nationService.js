@@ -1,16 +1,20 @@
 const nationRepository = require("../models/nationModels");
 
 async function getRoute(req, res) {
-  const nationName = req.body.name;
+  const nationId = req.params._id;
 
-  const found = await nationRepository.findOne({ name: nationName });
+  const found = await nationRepository.findOne({ _id: nationId }).catch(() => {
+    console.log("sth went wrong");
+  });
   res.json(found);
 }
 
 async function getAllRoute(req, res) {
   const foundList = await nationRepository.find();
   excludeNullInResponse(foundList);
-  res.json(foundList);
+  // res.json(foundList);
+  const headers = await setTableHeader();
+  res.render("nationView.pug", { list: foundList, headers: headers });
 }
 
 async function postRoute(req, res) {
@@ -22,7 +26,8 @@ async function postRoute(req, res) {
   try {
     await nationRepository.create(newNation).then(() => {
       console.log(`Created ${newNation}`);
-      res.json(newNation);
+      // res.json(newNation);
+      getAllRoute(req, res);
     });
   } catch (error) {
     console.log(error);
@@ -30,35 +35,36 @@ async function postRoute(req, res) {
 }
 
 async function putRoute(req, res) {
+  const nationId = req.params._id;
   const updateNation = {
     name: req.body.name,
     description: req.body.nescription,
   };
 
-  const found = await nationRepository.findOne({ name: req.body.name });
+  const found = await nationRepository.findOne({ _id: nationId });
 
   try {
-    await nationRepository
-      .updateOne(
-        { name: found.name },
-        { name: updateNation.name, description: updateNation.description }
-      )
-      .then(() => {
-        console.log(`Updated ${updateNation}`);
-        res.json(`Updated ${updateNation}`);
-      });
+    await nationRepository.updateOne(
+      { _id: nationId },
+      {
+        name: updateNation.name,
+        description: updateNation.description,
+      }
+    );
+    // res.json(`Updated ${updateNation}`);
+    getAllRoute(req, res);
   } catch (error) {
     console.log(error);
   }
 }
 
 async function delRoute(req, res) {
-  const name = req.body.name;
+  const nationId = req.params._id;
 
   try {
-    await nationRepository.findOneAndDelete({ name: name }).then(() => {
-      console.log(`Deleted ${name}`);
-      res.json(`Deleted ${name}`);
+    await nationRepository.findOneAndDelete({ _id: nationId }).then(() => {
+      // res.json(`Deleted ${name}`);
+      getAllRoute(req, res);
     });
   } catch (error) {
     console.log(error);
@@ -75,6 +81,12 @@ async function excludeNullInResponse(foundList) {
   });
 
   return foundList;
+}
+
+async function setTableHeader() {
+  const headers = ["[_id]", "[name]", "[description]"];
+
+  return headers;
 }
 
 module.exports = { getRoute, getAllRoute, postRoute, putRoute, delRoute };

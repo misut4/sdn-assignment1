@@ -1,0 +1,20 @@
+doctype html 
+html 
+    body
+        p hola
+        a(href='/formPlayer') Form input
+        table
+            thead
+                tr
+                    each header in headers
+                        th= header
+            tbody
+                each item in list
+                    tr
+                        td= item._id
+                        td= item.name
+                        td= item.imageURL
+                        td= item.club
+                        td= item.position
+                        td= item.goal
+                        td= item.isCaptain
