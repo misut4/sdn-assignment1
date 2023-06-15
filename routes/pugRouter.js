@@ -2,15 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-    res.render('index.pug')
+    res.render('index.ejs')
 }) 
 
-router.get("/formPlayer", (req, res) => {
-    res.render('playerForm.pug')
+router.get("/formPlayer/:_id", (req, res) => {
+    res.render('playerForm.ejs')
 }) 
 
-router.get("/formNation", (req, res) => {
-    res.render('nationForm.pug')
+router.get("/formNation/:_id", (req, res) => {
+    res.render('nationForm.ejs')
 }) 
 
 module.exports = router;

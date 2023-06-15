@@ -6,7 +6,9 @@ async function getRoute(req, res) {
   const found = await nationRepository.findOne({ _id: nationId }).catch(() => {
     console.log("sth went wrong");
   });
-  res.json(found);
+
+  // res.json(found);
+  res.render("nationForm.ejs", { nation: found });
 }
 
 async function getAllRoute(req, res) {
@@ -14,7 +16,7 @@ async function getAllRoute(req, res) {
   excludeNullInResponse(foundList);
   // res.json(foundList);
   const headers = await setTableHeader();
-  res.render("nationView.pug", { list: foundList, headers: headers });
+  res.render("nationView.ejs", { list: foundList, headers: headers });
 }
 
 async function postRoute(req, res) {
@@ -38,7 +40,7 @@ async function putRoute(req, res) {
   const nationId = req.params._id;
   const updateNation = {
     name: req.body.name,
-    description: req.body.nescription,
+    description: req.body.description,
   };
 
   const found = await nationRepository.findOne({ _id: nationId });

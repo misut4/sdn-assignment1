@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>My EJS Template with Bulma</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      <form method="post" id="form">
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Name</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="input is-info" name="name" type="text" value="<%= player.name %>">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Image</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="input is-info" name="image" type="text" value="<%= player.imageURL %>">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Club</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="input is-info" name="club" type="text" value="<%= player.club %>">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Position</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="input is-info" name="position" type="text" value="<%= player.position %>">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Goal</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="input is-info" name="goal" type="number" value="<%= player.goal %>">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">IsCaptain</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <div class="select is-primary">
+                  <select name="isCaptain">
+                    <option>Select dropdown</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <button class="button is-warning is-light" onclick="editPlayer('<%= player.id %>')">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script>
+          function editPlayer(playerId) {
+            // Create a hidden form to submit the PUT request
+            const form = document.getElementById("form");
+            form.setAttribute('method', 'POST');
+            form.setAttribute('action', '/player/' + playerId + "?_method=PUT");
+            const hiddenField = document.createElement('input');
+            hiddenField.setAttribute('type', 'hidden');
+            hiddenField.setAttribute('name', '_method');
+            hiddenField.setAttribute('value', 'PUT');
+            form.appendChild(hiddenField);
+            document.body.appendChild(form);
+          }
+        </script>
+      </form>
+    </div>
+  </section>
+</body>
+</html>

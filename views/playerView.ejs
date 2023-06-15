@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My EJS Template with Bulma</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <form method="post" action="/player">
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Name</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-info" name="name" type="text" placeholder="e.g. USA">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Image</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-info" name="imageURL" type="text" placeholder="Image url">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Club</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-info" name="club" type="text" placeholder="club">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Position</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-info" name="position" type="text" placeholder="position">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Goal</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-info" name="goal" type="number" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">IsCaptain</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <div class="select is-primary">
+                                    <select name="isCaptain">
+                                        <option>Select dropdown</option>
+                                        <option value="true">True</option>
+                                        <option value="false">False</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <button class="button is-primary" type="submit">
+                                    Create
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Club</th>
+                        <th>Positions</th>
+                        <th>Goal</th>
+                        <th>Captain</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% list.forEach(function(player){ %>
+                        <tr>
+                            <td>
+                                <%= player.name %>
+                            </td>
+                            <td>
+                                <%= player.club %>
+                            </td>
+                            <td>
+                                <%= player.position %>
+                            </td>
+                            <td>
+                                <%= player.goal %>
+                            </td>
+                            <td>
+                                <%= player.isCaptain %>
+                            </td>
+                            <td>
+                                <div class="buttons are-small">
+                                    <button class="button is-warning is-light"
+                                        onclick="editPlayerForm('<%= player.id %>')">Edit</button>
+                                    <button class="button is-danger is-light"
+                                        onclick="deletePlayer('<%= player.id %>')">Delete</button>
+                                </div></a>
+                            </td>
+                        </tr>
+                        <% })%>
+                </tbody>
+            </table>
+
+            <script>
+                function editPlayerForm(playerId) {
+                    // Create a hidden form to submit the PUT request
+                    const form = document.createElement('form');
+                    form.setAttribute('method', 'POST');
+                    form.setAttribute('action', '/player/' + playerId + "?_method=GET");
+                    const hiddenField = document.createElement('input');
+                    hiddenField.setAttribute('type', 'hidden');
+                    hiddenField.setAttribute('name', '_method');
+                    hiddenField.setAttribute('value', 'PUT');
+                    form.appendChild(hiddenField);
+                    document.body.appendChild(form);
+
+                    // Submit the form
+                    setTimeout(function () {
+                        form.submit();
+                    }, 100);
+                }
+
+                function deletePlayer(playerId) {
+                    // Create a hidden form to submit the PUT request
+                    const form = document.createElement('form');
+                    form.setAttribute('method', 'POST');
+                    form.setAttribute('action', '/player/' + playerId + "?_method=DELETE");
+                    const hiddenField = document.createElement('input');
+                    hiddenField.setAttribute('type', 'hidden');
+                    hiddenField.setAttribute('name', '_method');
+                    hiddenField.setAttribute('value', 'DELETE');
+                    form.appendChild(hiddenField);
+                    document.body.appendChild(form);
+
+                    // Submit the form
+                    setTimeout(function () {
+                        form.submit();
+                    }, 100);
+                }
+            </script>
+
+        </div>
+    </section>
+</body>
+
+</html>

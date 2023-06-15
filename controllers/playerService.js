@@ -6,7 +6,8 @@ async function getRoute(req, res) {
   const found = await playerRepository.findOne({ _id: playerId }).catch(() => {
     console.log("sth went wrong");
   });
-  res.json(found);
+  // res.json(found);
+  res.render("playerForm.ejs", { player: found});
 }
 
 async function getAllRoute(req, res) {
@@ -14,7 +15,7 @@ async function getAllRoute(req, res) {
   excludeNullInResponse(foundList);
   // res.json(foundList);
   const headers = await setTableHeader();
-  res.render("playerView.pug", { list: foundList, headers: headers });
+  res.render("playerView.ejs", { list: foundList, headers: headers });
 }
 
 async function postRoute(req, res) {
@@ -103,6 +104,7 @@ async function setTableHeader() {
     "[position]",
     "[goal]",
     "[isCaptain]",
+    "[test]"
   ];
 
   return headers;
