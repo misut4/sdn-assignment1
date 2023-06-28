@@ -1,4 +1,5 @@
 const nationRepository = require("../models/nationModels");
+const { getOrSetCache } = require("../utils/redis-cache");
 
 async function getRoute(req, res) {
   const nationId = req.params._id;
@@ -12,11 +13,16 @@ async function getRoute(req, res) {
 }
 
 async function getAllRoute(req, res) {
-  const foundList = await nationRepository.find();
-  excludeNullInResponse(foundList);
-  // res.json(foundList);
-  const headers = await setTableHeader();
-  res.render("nationView.ejs", { list: foundList, headers: headers });
+  const cacheList = await getOrSetCache("nationlist", async () => {
+    const foundList = await nationRepository.find();
+    excludeNullInResponse(foundList);
+
+    return foundList;
+  });
+
+  // res.json(cacheList);
+
+  res.render("nationView.ejs", { list: cacheList });
 }
 
 async function postRoute(req, res) {
@@ -83,12 +89,6 @@ async function excludeNullInResponse(foundList) {
   });
 
   return foundList;
-}
-
-async function setTableHeader() {
-  const headers = ["[_id]", "[name]", "[description]"];
-
-  return headers;
 }
 
 module.exports = { getRoute, getAllRoute, postRoute, putRoute, delRoute };
