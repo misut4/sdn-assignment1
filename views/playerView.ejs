@@ -109,6 +109,7 @@
                         <th>Positions</th>
                         <th>Goal</th>
                         <th>Captain</th>
+                        <th>Nation</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -131,11 +132,14 @@
                                 <%= player.isCaptain %>
                             </td>
                             <td>
+                                <%= player.nation?.name || 'N/A'%>
+                            </td>
+                            <td>
                                 <div class="buttons are-small">
                                     <button class="button is-warning is-light"
-                                        onclick="editPlayerForm('<%= player.id %>')">Edit</button>
+                                        onclick="editPlayerForm('<%= player._id %>')">Edit</button>
                                     <button class="button is-danger is-light"
-                                        onclick="deletePlayer('<%= player.id %>')">Delete</button>
+                                        onclick="deletePlayer('<%= player._id %>')">Delete</button>
                                 </div></a>
                             </td>
                         </tr>

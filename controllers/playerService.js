@@ -1,21 +1,37 @@
 const playerRepository = require("../models/playerModels");
+const { getOrSetCache } = require("../utils/redis-cache");
 
 async function getRoute(req, res) {
   const playerId = req.params._id;
 
-  const found = await playerRepository.findOne({ _id: playerId }).catch(() => {
+  const found = await playerRepository.findOne({ _id: playerId }).populate({path: "nation"}).catch(() => {
     console.log("sth went wrong");
   });
+
+  const test = await playerRepository.findOne({ _id: playerId }).populate('nation').catch((err) => {
+    console.log(err);
+  });
+
+  console.log(test);
+
+  console.log(found);
   // res.json(found);
-  res.render("playerForm.ejs", { player: found});
+  res.render("playerForm.ejs", { player: found });
 }
 
 async function getAllRoute(req, res) {
-  const foundList = await playerRepository.find();
-  excludeNullInResponse(foundList);
-  // res.json(foundList);
-  const headers = await setTableHeader();
-  res.render("playerView.ejs", { list: foundList, headers: headers });
+  const cacheList = await getOrSetCache("playerlist", async () => {
+    const foundList = await playerRepository.find().populate({path: "nation", select: ["name", "description"]}).exec()
+    excludeNullInResponse(foundList);
+
+    return foundList;
+  });
+
+  console.log(cacheList);
+
+  // res.json(cacheList);
+
+  res.render("playerView.ejs", { list: cacheList });
 }
 
 async function postRoute(req, res) {
@@ -26,6 +42,7 @@ async function postRoute(req, res) {
     position: req.body.position,
     goal: req.body.goal,
     isCaptain: req.body.isCaptain,
+    nation: req.body.nationId
   };
 
   try {
@@ -93,21 +110,6 @@ async function excludeNullInResponse(foundList) {
   });
 
   return foundList;
-}
-
-async function setTableHeader() {
-  const headers = [
-    "[_id]",
-    "[name]",
-    "[imageURL]",
-    "[club]",
-    "[position]",
-    "[goal]",
-    "[isCaptain]",
-    "[test]"
-  ];
-
-  return headers;
 }
 
 module.exports = { getRoute, getAllRoute, postRoute, putRoute, delRoute };
