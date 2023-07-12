@@ -20,18 +20,12 @@ async function getRoute(req, res) {
 }
 
 async function getAllRoute(req, res) {
-  const cacheList = await getOrSetCache("playerlist", async () => {
     const foundList = await playerRepository.find().populate({path: "nation", select: ["name", "description"]}).exec()
     excludeNullInResponse(foundList);
 
-    return foundList;
-  });
-
-  console.log(cacheList);
-
   // res.json(cacheList);
 
-  res.render("playerView.ejs", { list: cacheList });
+  res.render("playerView.ejs", { list: foundList });
 }
 
 async function postRoute(req, res) {

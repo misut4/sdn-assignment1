@@ -41,7 +41,7 @@ app.use(flash());
 //mongo connection
 DBConnection();
 
-RedisClientConnection();
+// RedisClientConnection();
 
 //router declarations
 const nationRoute = require("./routes/nationRouter");

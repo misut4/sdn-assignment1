@@ -13,16 +13,12 @@ async function getRoute(req, res) {
 }
 
 async function getAllRoute(req, res) {
-  const cacheList = await getOrSetCache("nationlist", async () => {
-    const foundList = await nationRepository.find();
-    excludeNullInResponse(foundList);
-
-    return foundList;
-  });
+  const foundList = await nationRepository.find();
+  excludeNullInResponse(foundList);
 
   // res.json(cacheList);
 
-  res.render("nationView.ejs", { list: cacheList });
+  res.render("nationView.ejs", { list: foundList });
 }
 
 async function postRoute(req, res) {
