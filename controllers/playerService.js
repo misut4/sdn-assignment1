@@ -27,9 +27,11 @@ async function getAllRoute(req, res) {
     return foundList;
   });
 
-  res.json(cacheList);
+  console.log(cacheList);
 
-  // res.render("playerView.ejs", { list: cacheList });
+  // res.json(cacheList);
+
+  res.render("playerView.ejs", { list: cacheList });
 }
 
 async function postRoute(req, res) {

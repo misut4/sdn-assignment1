@@ -109,6 +109,7 @@
                         <th>Positions</th>
                         <th>Goal</th>
                         <th>Captain</th>
+                        <th>Nation</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -129,6 +130,9 @@
                             </td>
                             <td>
                                 <%= player.isCaptain %>
+                            </td>
+                            <td>
+                                <%= player.nation?.name || 'N/A'%>
                             </td>
                             <td>
                                 <div class="buttons are-small">
